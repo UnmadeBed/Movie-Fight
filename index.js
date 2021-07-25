@@ -11,15 +11,25 @@ const fetchData = async (searchTerm) => {
 };
 
 const input = document.querySelector('input');
+// This is called 'debouncing an iput'. This means we wait for some time to pass
+// the last event to actually do something.
 
-let timeOutId;
+// Debounce function
+const debounce = (func, delay = 1000) => {
+  let timeOutId;
+  return (...args) => {
+    if (timeOutId) {
+      clearTimeout(timeOutId);
+    }
+    timeOutId = setTimeout(() => {
+      func.apply(null, args);
+    }, delay)
+  };
+};
+ 
+
 const onInput = event => {
-  if (timeOutId) {
-    clearTimeout(timeOutId);
-  }
-  timeOutId = setTimeout(() => {
   fetchData(event.target.value)
-  }, 1000);
 };
 
-input.addEventListener('input', onInput);
+input.addEventListener('input', debounce(onInput, 500));
