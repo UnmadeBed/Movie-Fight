@@ -1,8 +1,6 @@
 // fetchData function which makes network requests to API
 const mykey = config.MY_KEY;
-
-createAutocomplete({
-	root: document.querySelector(".autocomplete"),
+const autoCompleteConfig = {
 	renderOption(movie) {
 		const imageSrc = movie.Poster === "N/A" ? "" : movie.Poster;
 		return `
@@ -30,6 +28,15 @@ createAutocomplete({
 
 		return response.data.Search;
 	},
+};
+
+createAutocomplete({
+	...autoCompleteConfig,
+	root: document.querySelector("#left-autocomplete"),
+});
+createAutocomplete({
+	...autoCompleteConfig,
+	root: document.querySelector("#right-autocomplete"),
 });
 
 const onMovieSelect = async (movie) => {
