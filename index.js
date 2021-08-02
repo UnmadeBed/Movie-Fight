@@ -1,19 +1,5 @@
 // fetchData function which makes network requests to API
 const mykey = config.MY_KEY;
-const fetchData = async (searchTerm) => {
-	const response = await axios.get("http://www.omdbapi.com", {
-		params: {
-			apikey: mykey,
-			s: searchTerm,
-		},
-	});
-
-	if (response.data.Error) {
-		return [];
-	}
-
-	return response.data.Search;
-};
 
 createAutocomplete({
 	root: document.querySelector(".autocomplete"),
@@ -29,6 +15,20 @@ createAutocomplete({
 	},
 	inputValue(movie) {
 		return movie.Title;
+	},
+	async fetchData(searchTerm) {
+		const response = await axios.get("http://www.omdbapi.com", {
+			params: {
+				apikey: mykey,
+				s: searchTerm,
+			},
+		});
+
+		if (response.data.Error) {
+			return [];
+		}
+
+		return response.data.Search;
 	},
 });
 
