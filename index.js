@@ -33,7 +33,7 @@ createAutocomplete({
 	root: document.querySelector("#left-autocomplete"),
 	onOptionSelect(movie) {
 		document.querySelector(".tutorial").classList.add("is-hidden");
-		onMovieSelect(movie, document.querySelector("#left-summary"));
+		onMovieSelect(movie, document.querySelector("#left-summary"), "left");
 	},
 });
 createAutocomplete({
@@ -41,11 +41,13 @@ createAutocomplete({
 	root: document.querySelector("#right-autocomplete"),
 	onOptionSelect(movie) {
 		document.querySelector(".tutorial").classList.add("is-hidden");
-		onMovieSelect(movie, document.querySelector("#right-summary"));
+		onMovieSelect(movie, document.querySelector("#right-summary"), "right");
 	},
 });
 
-const onMovieSelect = async (movie, summaryElement) => {
+let leftMovie;
+let rightMovie;
+const onMovieSelect = async (movie, summaryElement, side) => {
 	const response = await axios.get("http://www.omdbapi.com", {
 		params: {
 			apikey: mykey,
@@ -54,9 +56,41 @@ const onMovieSelect = async (movie, summaryElement) => {
 	});
 
 	summaryElement.innerHTML = movieTemplate(response.data);
+
+	if (side === "left") {
+		leftMovie = response.data;
+	} else {
+		rightMovie = response.data;
+	}
+
+	if (leftMovie && rightMovie) {
+		runComparison();
+	}
 };
 
+const runComparison = () => {};
+
 const movieTemplate = (movieDetail) => {
+	const dollars = parseInt(
+		movieDetail.BoxOffice.replace(/\$/g, "").replace(/,/g, "")
+	);
+	const metaScore = parseInt(movieDetail.Metascore);
+	const imdbRating = parseFloat(movieDetail.imdbRating);
+	const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ""));
+
+	let count = 0;
+	const awards = movieDetail.Awards.split(" ").reduce((prev, word) => {
+		const value = parseInt(word);
+
+		if (isNaN(value)) {
+			return prev;
+		} else {
+			return prev + value;
+		}
+	}, 0);
+
+	console.log(awards);
+
 	return `
     <article class="media>
       <figure class="media-left">
